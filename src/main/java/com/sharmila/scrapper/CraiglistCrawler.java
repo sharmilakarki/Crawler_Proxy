@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,16 +35,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class Scrapper extends Thread {
+public class CraiglistCrawler extends Thread {
 
-	private RandomGenerator randomGenerator;
+	Random randomizer = new Random();
 	
 	Map<String,String> freeProxyMap=new HashMap<>();
 	List<Map<String,String>> mapList=new ArrayList<>();
 	
 	
-	@PostConstruct
-	public Map<String, String> loadMap(){
+	
+	public List<Map<String,String>> loadMap(){
 		
 		freeProxyMap.put("61.91.235.226", "8080");
 		freeProxyMap.put("185.119.57.121", "53281");
@@ -50,30 +52,17 @@ public class Scrapper extends Thread {
 		freeProxyMap.put("195.208.128.117", "53281");
 		freeProxyMap.put("14.139.248.17", "80");
 		freeProxyMap.put("205.189.37.86", "53281");
-		return freeProxyMap;
-	}
-	
-	public List<Map<String,String>> getMapList(){
-		
 		mapList.add(freeProxyMap);
-		
 		return mapList;
 	}
 	
-	public void run() {
 	
+	
+	public void run() {
 		
-		mapList=getMapList();
 		
-		mapList.get(randomGenerator.nextInt());
-		
-		for (Map<String, String> entry : mapList) {
-		    for (String key : entry.keySet()) {
-		    	System.setProperty(key, "14.139.248.17");
-				System.setProperty("http.proxyPort", "80");
-		    }
-		}
-		
+		System.setProperty("http.proxyHost", "205.189.37.86");
+		System.setProperty("http.proxyPort","53281");
 		
 		Document document = null;
 		Document doc = null;
@@ -106,7 +95,7 @@ public class Scrapper extends Thread {
 		// can guess the class and loop over document---- but not done that way
 
 		try {
-			document = Jsoup.connect(siteList.get(36)).get();
+			document = Jsoup.connect(siteList.get(4)).get();
 		} catch (IOException e4) {
 			// TODO Auto-generated catch block
 			e4.printStackTrace();
@@ -120,9 +109,9 @@ public class Scrapper extends Thread {
 		}
 
 		try {
-			document1 = Jsoup.connect(siteList.get(36) + e2List.get(18)).get();
+			document1 = Jsoup.connect(siteList.get(4) + e2List.get(18)).get();
 			
-			System.out.println("The name of the sites "+siteList.get(36));
+			System.out.println("The name of the sites "+(siteList.get(4) + e2List.get(18)));
 		} catch (IOException e3) {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
@@ -144,8 +133,7 @@ public class Scrapper extends Thread {
 		System.out.println("date before a week " + cal.getTime());
 
 		for (Element els : thirdSite) {
-			// System.out.println("****"+els.getElementsByTag("a").attr("href"));
-
+			
 			jobMap.put(els.getElementsByTag("a").attr("href"), els.getElementsByTag("time").attr("datetime"));
 		}
 
@@ -163,18 +151,45 @@ public class Scrapper extends Thread {
 						
 						try {
 							System.out.println(" starts without prefix");
-							withWeekDoc = Jsoup.connect((siteList.get(36) + e2List.get(18)) + e.getKey()).get();
-							elements = withWeekDoc.select("#postingbody");
+							withWeekDoc = Jsoup.connect(siteList.get(36)  + e.getKey()).get();
+							
+							System.out.println("  whole site "+(siteList.get(36) + e.getKey()));
+							
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
+							withWeekDoc = Jsoup.connect(siteList.get(36)+e2List.get(18)  + e.getKey()).get();
 							e1.printStackTrace();
 						}
 					} else {
-
+						e2List.get(18);
 						System.out.println(" starts with prefix");
-
+						//with main domain + search category  and link
 						withWeekDoc = Jsoup.connect(e.getKey()).get();
 					}
+					elements = withWeekDoc.select("#postingbody");
+					
+					//just checking
+					
+					if(elements.isEmpty()){
+						System.out.println("elements is empty ");
+					}
+					for (Element el : elements) {
+						System.out.println("///////" + el.ownText());
+
+						Pattern pattern = Pattern.compile("(locations.*\\.)(.)");
+						Pattern pattern2 = Pattern.compile("(call.*\\.)(.)");
+						Matcher matcher = pattern.matcher(el.ownText().toLowerCase());
+						Matcher matcher2 = pattern2.matcher(el.ownText().toLowerCase());
+						if (matcher.find()) {
+
+							System.out.println("Address " + matcher.group());
+
+						}
+						if (matcher2.find()) {
+							System.out.println("phone number " + matcher2.group());
+						}
+					}
+					System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
 				}
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
@@ -183,35 +198,12 @@ public class Scrapper extends Thread {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
 			
-			System.out.println("++" + elements);
-			if(elements.isEmpty()){
-				System.out.println("elements is empty ");
-			}
-			for (Element el : elements) {
-				System.out.println("///////" + el.ownText());
-
-				Pattern pattern = Pattern.compile("(locations.*\\.)(.)");
-				Pattern pattern2 = Pattern.compile("(call.*\\.)(.)");
-				Matcher matcher = pattern.matcher(el.ownText().toLowerCase());
-				Matcher matcher2 = pattern2.matcher(el.ownText().toLowerCase());
-				if (matcher.find()) {
-
-					System.out.println("Address " + matcher.group());
-
-				}
-				if (matcher2.find()) {
-					System.out.println("phone number " + matcher2.group());
-				}
-			}
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
 		}
 	}
 
 	public static void main(String[] args) throws IOException, ParseException {
-		Scrapper sc = new Scrapper();
+		CraiglistCrawler sc = new CraiglistCrawler();
 		sc.start();
 
 	}

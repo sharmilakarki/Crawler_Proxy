@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="/Job/jobs.htm" method="get" target="_top"
+		data-location-string-from-ip="Nepal" data-loc-ac-enabled="true"
+		data-pick-best-match="true" data-zipcodes-ok="true">
+		<input type="hidden" name="suggestCount" class="suggestCount"
+			value="0"><input type="hidden" name="suggestChosen"
+			class="suggestChosen" value="false"><input type="hidden"
+			name="clickSource" value="searchBtn"><input type="hidden"
+			name="typedKeyword" class="typedKey" value=""><label
+			for="KeywordSearch" class="offScreen">Keyword</label>
+		<!-- Do not show the keyword value in the input field if the flag is set to false Currently only used on JobView page based on a TLD feature flag -->
+		<input name="sc.keyword" id="KeywordSearch" class="keyword"
+			type="text" value="" placeholder="Job Title, Keywords, or Company"
+			data-auto-complete="true" autofocus="autofocus" data-ac-version="New"
+			autocomplete="off"><label for="LocationSearch"
+			class="offScreen">Location</label><input id="LocationSearch"
+			class="loc" type="text" value="" data-srch-type="popular"
+			placeholder="Location" autocomplete="off"><input
+			type="hidden" class="locType" name="locT" value=""><input
+			type="hidden" class="locId" name="locId" value=""><input
+			type="hidden" class="jobType" name="jobType" value="">
+		<div class="context-picker inactive" tabindex="0">
+			<span class="context-choice"> Jobs</span><span class="icon-close"></span>
+			<ul class="context-choice-list">
+				<li class="jobs active-context" data-search-type="JOBS"
+					data-search-url="/Job/jobs.htm" data-zipcodes-ok="true"
+					data-placeholder="Job Title, Keywords, or Company" tabindex="0"><span>Jobs</span></li>
+				<li class="reviews " data-search-type="EMPLOYER"
+					data-search-url="/Reviews/company-reviews.htm"
+					data-zipcodes-ok="false" data-placeholder="Company Name"
+					tabindex="0"><span>Companies</span></li>
+				<li class="salaries " data-search-type="SALARY"
+					data-zipcodes-ok="false"
+					data-search-url="/Salaries/company-salaries.htm"
+					data-placeholder="Job Title or Company" tabindex="0"><span>Salaries</span></li>
+				<li class="interviews " data-search-type="INTERVIEW"
+					data-zipcodes-ok="false"
+					data-search-url="/Interview/job-interview-questions.htm"
+					data-placeholder="Job Title or Company" tabindex="0"><span>Interviews</span></li>
+			</ul>
+		</div>
+		<button class="gd-btn-mkt" id="HeroSearchButton" type="submit">
+			<span>Search</span>
+		</button>
+	</form>
+</body>
+</html>
