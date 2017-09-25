@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,18 +28,19 @@ import org.jsoup.select.Elements;
 import com.sharmila.scrapper.domain.JobSummary;
 
 public class MonsterCrawler extends Thread {
-	JobSummary jobSummary=new JobSummary();
+	JobSummary jobSummary = new JobSummary();
 	Map<String, Date> jobMap = new HashMap<>();
 
 	Map<String, JobSummary> jobSummaryMap = new HashMap<>();
-	
+
 	public void run() {
-		//"195.208.128.117", "53281"
-		//205.189.37.86
+		// "195.208.128.117", "53281"
+		// 205.189.37.86
 		System.setProperty("http.proxyHost", "205.189.37.86");
 		System.setProperty("http.proxyPort", "53281");
-		
-		
+
+		Map<String, String> jobInfo = new HashMap<>();
+
 		// getting 7 days earlier date
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -7);
@@ -77,65 +79,96 @@ public class MonsterCrawler extends Thread {
 			Date parsedDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 			jobMap.put(e.getElementsByTag("a").attr("href"), parsedDate);
 
-
 		}
-		
+
 		Document weekOldDoc = null;
 		for (Map.Entry<String, Date> e : jobMap.entrySet()) {
-			
-		
 
 			if (e.getValue().after(cal.getTime()) | e.getValue().equals(cal.getTime())) {
 				System.out.println(e.getKey() + " ---- with date ---" + e.getValue());
 
 				try {
-				Response	response1 = Jsoup.connect(e.getKey()).userAgent(
+					Response response1 = Jsoup.connect(e.getKey()).userAgent(
 							"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
 
 							.referrer("http://www.google.com").timeout(12000).followRedirects(true).execute();
 					weekOldDoc = response1.parse();
-					//weekOldDoc = Jsoup.connect(e.getKey()).get();
+					// weekOldDoc = Jsoup.connect(e.getKey()).get();
 
 					System.out.println("what!!!!");
-					
-					Elements elements2 = weekOldDoc.select("#JobSummary .mux-job-summary .summary-section");
-					if(elements2.isEmpty()){
+				
+					Elements elements2 = weekOldDoc.select("#JobSummary .mux-job-summary .summary-section .header ");
+					if (elements2.isEmpty()) {
 						System.out.println("The element is empty");
 					}
-					
+
 					for (Element e1 : elements2) {
 						
-						if(e1.getElementsByTag("dt:contains(Location)") != null){
-						System.out.println("Locations :"+e1.getElementsByTag("dd").first().text());
-						jobSummary.setLocations(e1.getElementsByTag("dd").first().text());
-					}else if(e1.getElementsByTag("dt:contains(Job Type)") != null){
-						System.out.println("Job Type :"+e1.getElementsByTag("dd").first().text());
-						jobSummary.setJobType(e1.getElementsByTag("dd").first().text());
-					}else if(e1.getElementsByTag("dt:contains(Posted)") != null){
-						System.out.println("Posted :"+e1.getElementsByTag("dd").first().text());
-						jobSummary.setJobPostDate(e1.getElementsByTag("dd").first().text());
-					}
-//						if(e1.getElementsByTag("dt").first().text()=="Location"){
-//							System.out.println(e1.getElementsByTag("dd").first().text());
-//							jobSummary.setLocations(e1.getElementsByTag("dd").first().text());
-//						}else if(e1.getElementsByTag("dt").first().text()=="Job type"){
-//							System.out.println(e1.getElementsByTag("dd").first().text());
+
+//						if (e1.getElementsByTag("dt:contains(Location)") != null) {
+//							System.out.println("Locations :" + e1.getElementsByTag("dd").text());
+//							jobSummary.setLocations(e1.getElementsByTag("dd").text());
+//						}
+//						if (e1.getElementsByTag("dt:contains(Job Type)") != null) {
+//							// System.out.println("Job Type
+//							// :"+e1.getElementsByTag("dd").first().text());
 //							jobSummary.setJobType(e1.getElementsByTag("dd").first().text());
-//						}else if(e1.getElementsByTag("dt").first().text()=="Posted"){
-//							System.out.println(e1.getElementsByTag("dd").first().text());
+//						}
+//						if (e1.getElementsByTag("dt:contains(Posted)") != null) {
+//							// System.out.println("Posted
+//							// :"+e1.getElementsByTag("dd").first().text());
 //							jobSummary.setJobPostDate(e1.getElementsByTag("dd").first().text());
 //						}
-						jobSummaryMap.put(e.getKey(), jobSummary);
+//
+//						
+						
+						
+						Elements elKey=e1.select(".key");
+						Elements elValue=e1.select(".value");
+						
+						Iterator<Element> itrkey=elKey.iterator();
+						Iterator<Element> itrValue=elValue.iterator();
+						
+						while(itrkey.hasNext() && itrValue.hasNext()){
+							Element dt = (Element) itrkey.next();
+			                Element dd = (Element) itrValue.next();
+			                if(dt.text().equals("Location")){
+			                	jobSummary.setLocations(dd.text());
+			                	System.out.println(dd.text());
+			                }
+			                if(dt.text().equals("Job type")){
+			                	jobSummary.setJobType(dd.text());
+			                	System.out.println(dd.text());
+			                }
+			                if(dt.text().equals("Posted")){
+			                	jobSummary.setJobPostDate(dd.text());
+			                	System.out.println(dd.text());
+			                }
+			                if(dt.text().equals("Industries")){
+			                	
+			                	System.out.println(dd.text());
+			                }
+			                if(dt.text().equals("Reference code")){
+			                	System.out.println(dd.text());
+			                }
+			                
+			                jobSummaryMap.put(e.getKey(), jobSummary);
+			            
+						}
 						
 					}
-					
-					Thread.sleep(22000);
-					
-					for(Map.Entry<String, JobSummary> m:jobSummaryMap.entrySet()){
-						System.out.println("---- "+m.getValue().getLocations());
+					for (Map.Entry<String, JobSummary> m : jobSummaryMap.entrySet()) {
+						System.out.println("---- " + m.getValue().getLocations());
+						System.out.println("---- " + m.getValue().getCompanyName());
+						System.out.println("---- " + m.getValue().getJobPostDate());
+						System.out.println("---- " + m.getValue().getLink());
+						System.out.println("---- " + m.getValue().getJobType());
 					}
+					System.out.println("this line");
+					Thread.sleep(22000);
+
 					
-					
+
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -145,21 +178,19 @@ public class MonsterCrawler extends Thread {
 				}
 
 				System.out.println("----------------------------------------------------------------");
-				
+
 			}
 		}
-		
+
 	}
-	
-	public void getJobSummary(){
-		
-		
+
+	public void getJobSummary() {
+
 	}
 
 	public static void main(String[] args) {
 		MonsterCrawler monsterCrawler = new MonsterCrawler();
 		monsterCrawler.start();
-		
 
 	}
 }

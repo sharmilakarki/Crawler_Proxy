@@ -48,6 +48,12 @@ public class JobSummary {
 	public void setJobType(String jobType) {
 		this.jobType = jobType;
 	}
+	@Override
+	public String toString() {
+		return "JobSummary [title=" + title + ", jobType=" + jobType + ", locations=" + locations + ", companyName="
+				+ companyName + ", jobPostDate=" + jobPostDate + ", link=" + link + "]";
+	}
+	
 	
 	
 	
