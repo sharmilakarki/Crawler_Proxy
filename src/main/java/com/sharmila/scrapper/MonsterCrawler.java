@@ -25,13 +25,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.sharmila.scrapper.domain.JobSummary;
+import com.sharmila.scrapper.domain.GlassDoor;
 
 public class MonsterCrawler extends Thread {
-	JobSummary jobSummary = new JobSummary();
+	GlassDoor jobSummary = new GlassDoor();
 	Map<String, Date> jobMap = new HashMap<>();
 
-	Map<String, JobSummary> jobSummaryMap = new HashMap<>();
+	Map<String, GlassDoor> jobSummaryMap = new HashMap<>();
 
 	public void run() {
 		// "195.208.128.117", "53281"
@@ -132,20 +132,11 @@ public class MonsterCrawler extends Thread {
 						while(itrkey.hasNext() && itrValue.hasNext()){
 							Element dt = (Element) itrkey.next();
 			                Element dd = (Element) itrValue.next();
-			                if(dt.text().equals("Location")){
-			                	jobSummary.setLocations(dd.text());
-			                	System.out.println(dd.text());
-			                }
-			                if(dt.text().equals("Job type")){
-			                	jobSummary.setJobType(dd.text());
-			                	System.out.println(dd.text());
-			                }
-			                if(dt.text().equals("Posted")){
-			                	jobSummary.setJobPostDate(dd.text());
-			                	System.out.println(dd.text());
-			                }
+			               
+			               
+			               
 			                if(dt.text().equals("Industries")){
-			                	
+			                	jobSummary.setCompanyIndustry(dd.text());
 			                	System.out.println(dd.text());
 			                }
 			                if(dt.text().equals("Reference code")){
@@ -157,29 +148,31 @@ public class MonsterCrawler extends Thread {
 						}
 						
 					}
-					for (Map.Entry<String, JobSummary> m : jobSummaryMap.entrySet()) {
-						System.out.println("---- " + m.getValue().getLocations());
-						System.out.println("---- " + m.getValue().getCompanyName());
-						System.out.println("---- " + m.getValue().getJobPostDate());
-						System.out.println("---- " + m.getValue().getLink());
-						System.out.println("---- " + m.getValue().getJobType());
-					}
-					System.out.println("this line");
-					Thread.sleep(22000);
+					
 
 					
 
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				} 
 
 				System.out.println("----------------------------------------------------------------");
 
 			}
+		}
+		for (Map.Entry<String, GlassDoor> m : jobSummaryMap.entrySet()) {
+			
+			System.out.println("---- " + m.getValue().getCompanyName());
+			System.out.println("---- " + m.getValue().getJobPostDate());
+			
+		}
+		System.out.println("this line");
+		try {
+			Thread.sleep(22000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 	}

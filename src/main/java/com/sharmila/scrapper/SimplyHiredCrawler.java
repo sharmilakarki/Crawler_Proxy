@@ -23,17 +23,20 @@ public class SimplyHiredCrawler extends Thread {
 			Response response=Jsoup.connect("http://www.simplyhired.com").ignoreContentType(true)
 					.userAgent(
 							"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
+					.data("from","homepage_searchbox")
+					.data("q", q)
+					.data("l", l)
+					.data("action", "/search")
 					.referrer("http://www.google.com").timeout(12000).followRedirects(true).execute();
 			
 			Document document=response.parse();
 			
-			Elements elements=document.select(".browse-link");
+			Elements elements=document.select("*");
 			List<String> siteList = new ArrayList<>();
 			for (Element e : elements) {
 
+				System.out.println(e);
 				
-				siteList.add(e.attr("href"));
-				System.out.println(e.attr("href"));
 			}
 			//	Document document1 = Jsoup.connect("http://www.simplyhired.com"+siteList.get(0)).get();
 //				Response response1=Jsoup.connect("http://www.simplyhired.com"+siteList.get(0)).ignoreContentType(true)

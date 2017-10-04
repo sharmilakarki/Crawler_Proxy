@@ -13,7 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.sharmila.scrapper.domain.JobSummary;
+import com.sharmila.scrapper.domain.GlassDoor;
 
 public class Monster extends Thread {
 
@@ -27,7 +27,7 @@ public class Monster extends Thread {
 		Map<String, String> jobMap = new HashMap<>();
 		String location="newyork";
 		String keyword="software developer";
-		JobSummary jobSummary=new JobSummary();
+		GlassDoor jobSummary=new GlassDoor();
 		try {
 			Response response = Jsoup.connect("https://www.monster.com/geo/siteselection")
 
