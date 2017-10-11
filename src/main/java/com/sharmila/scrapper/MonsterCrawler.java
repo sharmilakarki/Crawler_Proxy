@@ -25,13 +25,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.sharmila.scrapper.domain.GlassDoor;
+import com.sharmila.scrapper.domain.Glassdoor;
+
 
 public class MonsterCrawler extends Thread {
-	GlassDoor jobSummary = new GlassDoor();
+	Glassdoor jobSummary=new Glassdoor ();
 	Map<String, Date> jobMap = new HashMap<>();
 
-	Map<String, GlassDoor> jobSummaryMap = new HashMap<>();
+	Map<String, Glassdoor> jobSummaryMap = new HashMap<>();
 
 	public void run() {
 		// "195.208.128.117", "53281"
@@ -161,7 +162,7 @@ public class MonsterCrawler extends Thread {
 
 			}
 		}
-		for (Map.Entry<String, GlassDoor> m : jobSummaryMap.entrySet()) {
+		for (Map.Entry<String, Glassdoor> m : jobSummaryMap.entrySet()) {
 			
 			System.out.println("---- " + m.getValue().getCompanyName());
 			System.out.println("---- " + m.getValue().getJobPostDate());
